@@ -11,10 +11,20 @@ describe('Filter: bytes', function() {
         expect(byte('text')).toBe('-');
     });
 
+    it('should return 0 B when bytes are 0', function () {
+        expect(byte(0)).toBe('0 B');
+    });
+
+    it('should return 0 MB when bytes are 0 and minUnit is MB', function () {
+        expect(byte(0, { minUnit: 'MB' })).toBe('0 MB');
+    });
+
     it('should round the filesize based on the configured precision', function () {
         var size = 1024 + 512;
         expect(byte(size)).toBe('1.5 kB');
         expect(byte(size, 2)).toBe('1.50 kB');
+        expect(byte(size, { precision: 2 })).toBe('1.50 kB');
+        expect(byte(size, { precision: 2, minUnit: 'kB' })).toBe('1.50 kB');
     });
 
     it('should recognize negative byte', function () {
@@ -58,34 +68,34 @@ describe('Filter: bytes', function() {
     });
 
     it('should recognize minUnit of kB', function () {
-        expect(byte(300, { precision: 0, minUnit: 'kB' })).toBe('< 1 kB');
+        expect(byte(300, { minUnit: 'kB' })).toBe('< 1 kB');
     });
 
     it('should recognize minUnit of MB', function () {
-        expect(byte(300*Math.pow(1024, 1), { precision: 0, minUnit: 'MB' })).toBe('< 1 MB');
+        expect(byte(300*Math.pow(1024, 1), { minUnit: 'MB' })).toBe('< 1 MB');
     });
 
     it('should recognize minUnit of GB', function () {
-        expect(byte(300*Math.pow(1024, 2), { precision: 0, minUnit: 'GB' })).toBe('< 1 GB');
+        expect(byte(300*Math.pow(1024, 2), { minUnit: 'GB' })).toBe('< 1 GB');
     });
 
     it('should recognize minUnit of TB', function () {
-        expect(byte(300*Math.pow(1024, 3), { precision: 0, minUnit: 'TB' })).toBe('< 1 TB');
+        expect(byte(300*Math.pow(1024, 3), { minUnit: 'TB' })).toBe('< 1 TB');
     });
 
     it('should recognize minUnit of PB', function () {
-        expect(byte(300*Math.pow(1024, 4), { precision: 0, minUnit: 'PB' })).toBe('< 1 PB');
+        expect(byte(300*Math.pow(1024, 4), { minUnit: 'PB' })).toBe('< 1 PB');
     });
 
     it('should recognize minUnit of EB', function () {
-        expect(byte(300*Math.pow(1024, 5), { precision: 0, minUnit: 'EB' })).toBe('< 1 EB');
+        expect(byte(300*Math.pow(1024, 5), { minUnit: 'EB' })).toBe('< 1 EB');
     });
 
     it('should recognize minUnit of ZB', function () {
-        expect(byte(300*Math.pow(1024, 6), { precision: 0, minUnit: 'ZB' })).toBe('< 1 ZB');
+        expect(byte(300*Math.pow(1024, 6), { minUnit: 'ZB' })).toBe('< 1 ZB');
     });
 
     it('should recognize minUnit of YB', function () {
-        expect(byte(300*Math.pow(1024, 7), { precision: 0, minUnit: 'YB' })).toBe('< 1 YB');
+        expect(byte(300*Math.pow(1024, 7), { minUnit: 'YB' })).toBe('< 1 YB');
     });
 });
