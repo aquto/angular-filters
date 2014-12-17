@@ -1,6 +1,6 @@
 /**
  * Useful filters for AngularJS
- * @version v1.1.1 - 2014-12-16 * @link https://github.com/niemyjski/angular-filters
+ * @version v1.1.1 - 2014-12-17 * @link https://github.com/niemyjski/angular-filters
  * @author Blake Niemyjski <biemyjski@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */(function () {
@@ -15,7 +15,27 @@
     angular.module('angular-filters')
         .filter('bytes', [function () {
             return function(bytes, args) {
-                if (bytes === 0) {
+
+                var precision;
+                var minUnit;
+                var maxDisplay = 1023;
+                var units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+                if (typeof args === 'undefined') {
+                    precision = 1;
+                }
+                else if (typeof args === 'object') {
+                    precision = (typeof args.precision === 'undefined') ? 1 : args.precision;
+                    minUnit = args.minUnit;
+                    maxDisplay = args.maxDisplay || maxDisplay;
+                }
+                else {
+                    precision = args;
+                }
+
+                if (bytes === 0 && minUnit && units.indexOf(minUnit) > -1) {
+                    return '0 '+minUnit;
+                }
+                else if (bytes === 0) {
                     return '0 B';
                 }
 
@@ -27,31 +47,23 @@
                 if (isNegative) {
                     bytes = -bytes;
                 }
-                var precision;
-                var minUnit;
-                if (typeof args === 'undefined') {
-                    precision = 1;
-                }
-                else if (typeof args === 'object') {
-                    precision = args.precision;
-                    minUnit = args.minUnit;
-                }
-                else {
-                    precision = args;
-                }
 
-                var units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-                var exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
-                var number = (bytes / Math.pow(1024, Math.floor(exponent))).toFixed(precision);
-                var fuzzy = false;
+                var exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1) -1;
+                var number = (bytes / Math.pow(1024, Math.floor(exponent)));
+                if (number > maxDisplay) {
+                    exponent = exponent + 1;
+                    number = (bytes / Math.pow(1024, Math.floor(exponent)));   
+                }
+                number = number.toFixed(precision);
+                var belowMin = false;
 
                 if (minUnit && units.indexOf(minUnit) > -1 && exponent < units.indexOf(minUnit)) {
                     number = 1;
                     exponent = units.indexOf(minUnit);
-                    fuzzy = true;
+                    belowMin = true;
                 }
 
-                return (fuzzy ? '< ' : '') + (isNegative ? '-' : '') +  number +  ' ' + units[exponent];
+                return (belowMin ? '< ' : '') + (isNegative ? '-' : '') +  number +  ' ' + units[exponent];
             };
         }]);
 }());

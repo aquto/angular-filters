@@ -98,4 +98,12 @@ describe('Filter: bytes', function() {
     it('should recognize minUnit of YB', function () {
         expect(byte(300*Math.pow(1024, 7), { minUnit: 'YB' })).toBe('< 1 YB');
     });
+
+    it('should respect the maxDisplay value', function () {
+        expect(byte(6543*Math.pow(1024, 2))).toBe('6.4 GB');
+        expect(byte(6543*Math.pow(1024, 2), { maxDisplay: 9999 })).toBe('6543.0 MB');
+
+        expect(byte(350*Math.pow(1024, 2))).toBe('350.0 MB');
+        expect(byte(350*Math.pow(1024, 2), { maxDisplay: 9999 })).toBe('350.0 MB');
+    });
 });
